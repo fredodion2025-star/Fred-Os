@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<title>The Fred OS</title>
+<meta name="theme-color" content="#0A0F1E">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Fred OS">
+<link rel="manifest" href="data:application/manifest+json,{
+  "name": "The Fred OS",
+  "short_name": "Fred OS",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "%230A0F1E",
+  "theme_color": "%230A0F1E"
+}">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230A0F1E'/%3E%3Ctext x='50' y='68' font-size='58' fill='%23F5C518' text-anchor='middle' font-family='Georgia,serif' font-weight='bold'%3EF%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230A0F1E'/%3E%3Ctext x='50' y='68' font-size='58' fill='%23F5C518' text-anchor='middle' font-family='Georgia,serif' font-weight='bold'%3EF%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy-deep:#070B16;
+  --navy:#0A0F1E;
+  --navy-light:#11192E;
+  --navy-card:#141D33;
+  --navy-border:#222D47;
+  --gold:#F5C518;
+  --gold-dim:#9C8226;
+  --gold-glow:rgba(245,197,24,0.18);
+  --white:#F4F4F2;
+  --grey:#7B8499;
+  --grey-dim:#4A5267;
+  --red:#E2574C;
+  --green:#4CAF7D;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overscroll-behavior-y:none;}
+body{
+  background:var(--navy);
+  color:var(--white);
+  font-family:'Inter',sans-serif;
+  font-size:15px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  padding-top:env(safe-area-inset-top);
+  padding-bottom:env(safe-area-inset-bottom);
+}
+h1,h2,h3,.heading{font-family:'Space Grotesk',sans-serif;}
+.serif{font-family:'Fraunces',serif;}
+button{font-family:inherit;border:none;background:none;color:inherit;cursor:pointer;}
+input,textarea{font-family:inherit;color:inherit;background:none;border:none;outline:none;}
+::-webkit-scrollbar{display:none;}
+*{scrollbar-width:none;}
+
+#app{max-width:560px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;position:relative;}
+
+/* ===== TOP QUOTE BAR ===== */
+.quote-bar{
+  padding:14px 20px 10px;
+  font-family:'Fraunces',serif;
+  font-style:italic;
+  font-size:13px;
+  color:var(--grey);
+  border-bottom:1px solid var(--navy-border);
+  line-height:1.4;
+}
+.quote-bar span.attr{color:var(--gold-dim);font-style:normal;font-size:11px;letter-spacing:0.05em;text-transform:uppercase;}
+
+/* ===== SCREENS ===== */
+.screen{display:none;flex:1;flex-direction:column;padding:18px 18px 100px;animation:fadeIn 0.25s ease;}
+.screen.active{display:flex;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+/* ===== IDENTITY BANNER ===== */
+.identity-banner{
+  background:linear-gradient(135deg,var(--navy-card),var(--navy-light));
+  border:1px solid var(--navy-border);
+  border-left:3px solid var(--gold);
+  border-radius:10px;
+  padding:16px 18px;
+  margin-bottom:18px;
+  font-family:'Fraunces',serif;
+  font-size:14.5px;
+  line-height:1.55;
+  color:#E8E6DD;
+}
+
+/* ===== CLOCK / STREAK HEADER ===== */
+.home-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;}
+.clock-wrap .clock{font-family:'Space Grotesk',sans-serif;font-size:38px;font-weight:700;color:var(--gold);letter-spacing:-0.5px;line-height:1;}
+.clock-wrap .date-line{color:var(--grey);font-size:12.5px;margin-top:4px;}
+.streak-pill{
+  background:var(--navy-card);border:1px solid var(--navy-border);
+  border-radius:20px;padding:8px 14px;text-align:center;white-space:nowrap;
+}
+.streak-pill .num{font-family:'Space Grotesk',sans-serif;color:var(--gold);font-weight:700;font-size:15px;}
+.streak-pill .lbl{font-size:9.5px;color:var(--grey);letter-spacing:0.04em;text-transform:uppercase;}
+
+/* ===== ACTIVE BLOCK CARD ===== */
+.active-block-card{
+  background:linear-gradient(135deg,rgba(245,197,24,0.13),rgba(245,197,24,0.03));
+  border:1px solid var(--gold-dim);
+  border-radius:14px;
+  padding:18px;
+  margin-bottom:20px;
+}
+.active-block-card .tag{font-size:10.5px;letter-spacing:0.1em;color:var(--gold);text-transform:uppercase;font-weight:600;}
+.active-block-card .title{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:600;margin:6px 0 4px;}
+.active-block-card .countdown{color:var(--grey);font-size:12.5px;}
+.active-block-card .countdown b{color:var(--white);}
+
+/* ===== TIMELINE ===== */
+.timeline-title{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--grey);margin-bottom:10px;font-weight:600;}
+.timeline{display:flex;flex-direction:column;}
+.tl-item{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:11px 0;border-bottom:1px solid var(--navy-border);
+  transition:opacity 0.2s;
+}
+.tl-item:last-child{border-bottom:none;}
+.tl-time{font-family:'Space Grotesk',sans-serif;font-size:11.5px;color:var(--grey);min-width:46px;padding-top:2px;}
+.tl-check{
+  width:21px;height:21px;border-radius:6px;border:1.5px solid var(--navy-border);
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:1px;
+  transition:all 0.15s;
+}
+.tl-check.done{background:var(--gold);border-color:var(--gold);}
+.tl-check.done::after{content:'✓';color:var(--navy);font-size:13px;font-weight:700;}
+.tl-content{flex:1;}
+.tl-label{font-size:14px;font-weight:500;}
+.tl-item.active .tl-label{color:var(--gold);font-weight:600;}
+.tl-item.active .tl-time{color:var(--gold);}
+.tl-item.past{opacity:0.4;}
+.tl-item.past .tl-label{text-decoration:line-through;text-decoration-color:var(--grey-dim);}
+
+/* ===== SLEEP SCREEN ===== */
+.sleep-screen{
+  display:none;position:fixed;inset:0;background:var(--navy-deep);z-index:999;
+  flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;
+}
+.sleep-screen.show{display:flex;}
+.sleep-screen .moon{font-size:46px;margin-bottom:18px;opacity:0.7;}
+.sleep-screen h2{font-family:'Fraunces',serif;font-size:24px;font-weight:500;margin-bottom:10px;}
+.sleep-screen .time{font-family:'Space Grotesk',sans-serif;color:var(--gold);font-size:42px;margin:14px 0;}
+.sleep-screen p{color:var(--grey);font-size:13.5px;max-width:280px;}
+.sleep-screen button{margin-top:28px;color:var(--grey-dim);font-size:11.5px;text-decoration:underline;}
+
+/* ===== PILLAR CARDS ===== */
+.pillar-grid{display:flex;flex-direction:column;gap:12px;}
+.pillar-card{
+  background:var(--navy-card);border:1px solid var(--navy-border);
+  border-radius:14px;padding:16px 18px;transition:all 0.2s;
+}
+.pillar-card.logged{border-color:var(--gold-dim);box-shadow:0 0 0 1px var(--gold-glow), 0 4px 18px -6px var(--gold-glow);}
+.pillar-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.pillar-name{display:flex;align-items:center;gap:9px;font-weight:600;font-size:15px;}
+.pillar-icon{font-size:18px;}
+.pillar-streak{font-size:11px;color:var(--grey);}
+.pillar-streak b{color:var(--gold);}
+.pillar-meta{font-size:12px;color:var(--grey);margin-bottom:12px;line-height:1.5;}
+.pillar-bar-track{height:5px;background:var(--navy-border);border-radius:3px;overflow:hidden;margin-bottom:12px;}
+.pillar-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold-dim),var(--gold));border-radius:3px;transition:width 0.3s;}
+.pillar-actions{display:flex;gap:8px;}
+.btn-log{
+  flex:1;padding:9px;border-radius:8px;text-align:center;font-size:12.5px;font-weight:600;
+  background:var(--navy-light);border:1px solid var(--navy-border);transition:all 0.15s;
+}
+.btn-log.done{background:var(--gold);color:var(--navy);border-color:var(--gold);}
+
+/* ===== PLAN / MONTH CARDS ===== */
+.month-card{background:var(--navy-card);border:1px solid var(--navy-border);border-radius:14px;margin-bottom:14px;overflow:hidden;}
+.month-card.current{border-color:var(--gold-dim);}
+.month-head{padding:16px 18px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;}
+.month-head-left .m-num{font-size:10.5px;color:var(--gold);letter-spacing:0.08em;text-transform:uppercase;font-weight:700;}
+.month-head-left .m-title{font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:600;margin-top:2px;}
+.month-head-left .m-theme{font-size:12px;color:var(--grey);margin-top:3px;font-style:italic;}
+.m-badge{font-size:9.5px;padding:4px 9px;border-radius:20px;font-weight:700;letter-spacing:0.04em;white-space:nowrap;}
+.m-badge.current{background:var(--gold);color:var(--navy);}
+.m-badge.upcoming{background:var(--navy-light);color:var(--grey);}
+.m-badge.completed{background:var(--green);color:var(--navy);}
+.month-progress-track{height:3px;background:var(--navy-border);}
+.month-progress-fill{height:100%;background:var(--gold);}
+.month-body{max-height:0;overflow:hidden;transition:max-height 0.3s ease;}
+.month-body.open{max-height:600px;}
+.month-goals{padding:6px 18px 16px;}
+.goal-row{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-top:1px solid var(--navy-border);}
+.goal-check{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--navy-border);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;}
+.goal-check.done{background:var(--gold);border-color:var(--gold);}
+.goal-check.done::after{content:'✓';color:var(--navy);font-size:11px;font-weight:700;}
+.goal-text{font-size:13px;color:#D8D6CC;line-height:1.4;}
+.goal-text b{color:var(--white);font-weight:600;}
+.week-indicator{font-size:11px;color:var(--grey);margin-top:6px;}
+
+/* ===== REMINDERS ===== */
+.master-toggle-row{display:flex;justify-content:space-between;align-items:center;background:var(--navy-card);border:1px solid var(--navy-border);border-radius:12px;padding:14px 16px;margin-bottom:16px;}
+.master-toggle-row .lbl{font-weight:600;font-size:14px;}
+.toggle{width:44px;height:25px;background:var(--navy-border);border-radius:20px;position:relative;transition:background 0.2s;flex-shrink:0;}
+.toggle.on{background:var(--gold);}
+.toggle::after{content:'';position:absolute;width:19px;height:19px;background:var(--white);border-radius:50%;top:3px;left:3px;transition:left 0.2s;}
+.toggle.on::after{left:22px;background:var(--navy);}
+.reminder-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--navy-border);}
+.reminder-time{font-family:'Space Grotesk',sans-serif;font-size:12.5px;color:var(--gold);min-width:48px;}
+.reminder-text{flex:1;}
+.reminder-text .rb-name{font-size:13px;font-weight:600;}
+.reminder-text .rb-msg{font-size:11.5px;color:var(--grey);margin-top:2px;line-height:1.4;}
+.notif-banner{background:rgba(226,87,76,0.12);border:1px solid rgba(226,87,76,0.35);border-radius:10px;padding:13px 15px;margin-bottom:16px;font-size:12px;color:#F0B2AC;line-height:1.5;}
+.notif-banner button{display:block;margin-top:9px;background:var(--red);color:white;padding:8px 14px;border-radius:7px;font-size:12px;font-weight:600;}
+
+/* ===== JOURNAL ===== */
+.journal-card{background:var(--navy-card);border:1px solid var(--navy-border);border-radius:14px;padding:18px;margin-bottom:18px;}
+.journal-prompt{margin-bottom:16px;}
+.journal-prompt label{display:block;font-size:12.5px;color:var(--gold-dim);font-weight:600;margin-bottom:6px;}
+.journal-prompt textarea{width:100%;background:var(--navy-light);border:1px solid var(--navy-border);border-radius:8px;padding:10px 12px;font-size:13.5px;resize:none;min-height:44px;line-height:1.5;}
+.journal-prompt textarea:focus{border-color:var(--gold-dim);}
+.save-indicator{font-size:11px;color:var(--green);text-align:right;opacity:0;transition:opacity 0.3s;}
+.save-indicator.show{opacity:1;}
+.past-entries-title{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--grey);margin:6px 0 12px;font-weight:600;}
+.entry-row{background:var(--navy-card);border:1px solid var(--navy-border);border-radius:10px;margin-bottom:10px;overflow:hidden;}
+.entry-head{padding:13px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;}
+.entry-date{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;}
+.entry-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);}
+.entry-body{max-height:0;overflow:hidden;transition:max-height 0.3s;}
+.entry-body.open{max-height:400px;}
+.entry-body-inner{padding:0 16px 14px;font-size:12.5px;color:var(--grey);line-height:1.6;}
+.entry-body-inner b{color:var(--white);}
+
+/* ===== BANNERS ===== */
+.phone-banner{
+  background:linear-gradient(135deg,rgba(245,197,24,0.14),rgba(245,197,24,0.04));
+  border:1px solid var(--gold-dim);border-radius:10px;padding:12px 15px;margin-bottom:16px;
+  font-size:12px;font-weight:600;color:var(--gold);text-align:center;letter-spacing:0.02em;
+}
+.weekly-score-banner{background:var(--navy-card);border:1px solid var(--navy-border);border-radius:12px;padding:14px 16px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;}
+.weekly-score-banner .ws-label{font-size:12px;color:var(--grey);}
+.weekly-score-banner .ws-num{font-family:'Space Grotesk',sans-serif;font-size:20px;color:var(--gold);font-weight:700;}
+
+/* ===== BOTTOM NAV ===== */
+.bottom-nav{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:560px;
+  background:rgba(10,15,30,0.92);backdrop-filter:blur(14px);
+  border-top:1px solid var(--navy-border);
+  display:flex;padding:8px 6px calc(8px + env(safe-area-inset-bottom));
+  z-index:100;
+}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 2px;border-radius:10px;transition:background 0.15s;}
+.nav-btn.active{color:var(--gold);}
+.nav-btn:not(.active){color:var(--grey-dim);}
+.nav-icon{font-size:19px;}
+.nav-label{font-size:9.5px;font-weight:600;letter-spacing:0.02em;}
+
+/* ===== WELCOME SCREEN ===== */
+.welcome-screen{
+  position:fixed;inset:0;background:radial-gradient(circle at 50% 20%, #14203a, #070B16 70%);
+  z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:30px;
+}
+.welcome-screen .big-title{font-family:'Space Grotesk',sans-serif;font-size:15px;letter-spacing:0.25em;color:var(--gold);font-weight:700;margin-bottom:10px;text-transform:uppercase;}
+.welcome-screen .sub{font-family:'Fraunces',serif;font-size:19px;font-style:italic;color:#D8D6CC;margin-bottom:40px;}
+.welcome-screen .id-statement{font-family:'Fraunces',serif;font-size:15px;line-height:1.6;color:#B8BAC6;max-width:320px;margin-bottom:42px;}
+.welcome-screen label{display:block;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--grey);margin-bottom:10px;}
+.welcome-screen input[type=date]{
+  background:var(--navy-card);border:1px solid var(--navy-border);border-radius:10px;
+  padding:13px 16px;color:var(--white);font-size:15px;margin-bottom:26px;width:240px;text-align:center;
+}
+.begin-btn{
+  background:var(--gold);color:var(--navy);font-weight:700;font-size:14px;letter-spacing:0.05em;
+  padding:15px 38px;border-radius:30px;text-transform:uppercase;
+}
+
+/* ===== MISC ===== */
+.section-spacer{height:6px;}
+.empty-note{font-size:12px;color:var(--grey-dim);text-align:center;padding:20px 0;}
+h2.screen-title{font-family:'Space Grotesk',sans-serif;font-size:21px;font-weight:600;margin-bottom:4px;}
+.screen-subtitle{font-size:12.5px;color:var(--grey);margin-bottom:18px;}
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- WELCOME SCREEN -->
+  <div class="welcome-screen" id="welcomeScreen">
+    <div class="big-title">The Fred OS</div>
+    <div class="sub">Your life. Rebuilt. One day at a time.</div>
+    <div class="id-statement">"I am Fred. I am a man of God, a builder of things, a student of craft, and someone worth knowing. I do not drift. I decide."</div>
+    <label for="startDateInput">What date are you starting?</label>
+    <input type="date" id="startDateInput">
+    <button class="begin-btn" id="beginBtn">Begin My Rebuild</button>
+  </div>
+
+  <!-- SLEEP SCREEN -->
+  <div class="sleep-screen" id="sleepScreen">
+    <div class="moon">🌙</div>
+    <h2>You should be sleeping, Fred.</h2>
+    <div class="time" id="sleepClock">00:00</div>
+    <p>Rest is part of the plan. Close this and let the day end the way it should.</p>
+    <button id="sleepOverride">I'm up early — let me in</button>
+  </div>
+
+  <div class="quote-bar" id="quoteBar"></div>
+
+  <!-- TODAY SCREEN -->
+  <div class="screen active" id="screen-today">
+    <div class="identity-banner">"I am Fred. I am a man of God, a builder of things, a student of craft, and someone worth knowing. I do not drift. I decide."</div>
+    <div class="home-header">
+      <div class="clock-wrap">
+        <div class="clock" id="liveClock">00:00</div>
+        <div class="date-line" id="dateLine">—</div>
+      </div>
+      <div class="streak-pill">
+        <div class="num" id="streakNum">Day 1</div>
+        <div class="lbl">of 112</div>
+      </div>
+    </div>
+    <div class="active-block-card" id="activeBlockCard">
+      <div class="tag">Right now</div>
+      <div class="title" id="activeBlockTitle">—</div>
+      <div class="countdown" id="activeBlockCountdown">—</div>
+    </div>
+    <div class="timeline-title">Today's Schedule</div>
+    <div class="timeline" id="timeline"></div>
+  </div>
+
+  <!-- PILLARS SCREEN -->
+  <div class="screen" id="screen-pillars">
+    <h2 class="screen-title">The 6 Pillars</h2>
+    <div class="screen-subtitle">Touch every pillar, every day. That's the whole game.</div>
+    <div class="pillar-grid" id="pillarGrid"></div>
+  </div>
+
+  <!-- PLAN SCREEN -->
+  <div class="screen" id="screen-plan">
+    <h2 class="screen-title">The 4-Month Plan</h2>
+    <div class="screen-subtitle">112 days. Four phases. One new man.</div>
+    <div id="monthCards"></div>
+  </div>
+
+  <!-- REMINDERS SCREEN -->
+  <div class="screen" id="screen-reminders">
+    <h2 class="screen-title">Reminders</h2>
+    <div class="screen-subtitle">Your discipline lives in the alarm, not your mood.</div>
+    <div class="notif-banner" id="notifBanner" style="display:none;">
+      Notifications are off. Without these, the app can't remind you at each block. Enable them in your browser/phone settings for this site, then reload.
+      <button id="enableNotifBtn">Enable Notifications</button>
+    </div>
+    <div class="master-toggle-row">
+      <div class="lbl">All Reminders</div>
+      <div class="toggle" id="masterToggle"></div>
+    </div>
+    <div id="reminderList"></div>
+  </div>
+
+  <!-- JOURNAL SCREEN -->
+  <div class="screen" id="screen-journal">
+    <h2 class="screen-title">Journal</h2>
+    <div class="screen-subtitle" id="journalDateLabel">Today</div>
+    <div class="journal-card">
+      <div class="journal-prompt">
+        <label>How do I feel right now?</label>
+        <textarea id="jp1" placeholder="Write honestly..."></textarea>
+      </div>
+      <div class="journal-prompt">
+        <label>What do I want from today?</label>
+        <textarea id="jp2" placeholder="Be specific..."></textarea>
+      </div>
+      <div class="journal-prompt">
+        <label>What am I afraid of?</label>
+        <textarea id="jp3" placeholder="Name it..."></textarea>
+      </div>
+      <div class="journal-prompt" id="jp4wrap" style="display:none;">
+        <label>How did I make people feel today?</label>
+        <textarea id="jp4" placeholder="Think it through..."></textarea>
+      </div>
+      <div class="journal-prompt">
+        <label>Free write</label>
+        <textarea id="jpFree" placeholder="Anything else on your mind..." style="min-height:80px;"></textarea>
+      </div>
+      <div class="save-indicator" id="saveIndicator">Saved ✓</div>
+    </div>
+    <div class="past-entries-title">Past Entries</div>
+    <div id="pastEntries"></div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <button class="nav-btn active" data-screen="today">
+      <div class="nav-icon">🏠</div><div class="nav-label">Today</div>
+    </button>
+    <button class="nav-btn" data-screen="pillars">
+      <div class="nav-icon">⚡</div><div class="nav-label">Pillars</div>
+    </button>
+    <button class="nav-btn" data-screen="plan">
+      <div class="nav-icon">🗺️</div><div class="nav-label">Plan</div>
+    </button>
+    <button class="nav-btn" data-screen="reminders">
+      <div class="nav-icon">🔔</div><div class="nav-label">Reminders</div>
+    </button>
+    <button class="nav-btn" data-screen="journal">
+      <div class="nav-icon">📓</div><div class="nav-label">Journal</div>
+    </button>
+  </div>
+
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ===================== DATA ===================== */
+const SCHEDULE = [
+  {start:[5,0], end:[5,10], label:"Wake Up & Identity Statement", notif:"Fred, it's time. Wake up. Say your identity statement. The day is yours."},
+  {start:[5,10], end:[5,40], label:"God Time — Bible, Prayer, Gratitude", notif:"Open your Bible. Pray out loud. God is waiting.", pillar:"god"},
+  {start:[5,40], end:[5,50], label:"Journal (3 sentences)", notif:"Three sentences. How do you feel, what do you want, what are you afraid of.", pillar:"mind"},
+  {start:[5,50], end:[6,50], label:"Piano Practice (PianoNotes)", notif:"Piano time. Open PianoNotes. No excuses.", pillar:"skills"},
+  {start:[6,50], end:[7,30], label:"Graphics (Coursera)", notif:"Graphics hour. Open Coursera. Stay sharp.", pillar:"skills"},
+  {start:[7,30], end:[8,0], label:"Shower, Dress, Eat", notif:"Get ready. Dress like the man you're becoming.", pillar:"body"},
+  {start:[8,0], end:[14,0], label:"School — Teach With Excellence", notif:"School starts. Be the most professional person in the room.", pillar:"money"},
+  {start:[14,0], end:[16,0], label:"Web Dev at Work (Scrimba)", notif:"School is done. Open Scrimba. Build something.", pillar:"skills"},
+  {start:[16,0], end:[18,0], label:"Transit Home — No Scrolling", notif:"Heading home. Podcast or worship. Not your feed.", pillar:"mind"},
+  {start:[18,0], end:[18,30], label:"Tidy Space & Environment", notif:"You're home. Tidy your space first. Clean space, clear mind.", pillar:"body"},
+  {start:[18,30], end:[19,0], label:"People Time — Call/Text Someone", notif:"Reach out to someone who matters. Be present.", pillar:"relationships"},
+  {start:[19,0], end:[20,0], label:"Web Dev at Home", notif:"Second build session. Open your project.", pillar:"skills"},
+  {start:[20,0], end:[21,0], label:"Evening with God — Worship & Reflection", notif:"Put everything down. This hour belongs to God.", pillar:"god"},
+  {start:[21,0], end:[22,0], label:"EQ & Growth — Read a Book", notif:"Pick up the book. One chapter. Sharpen your mind.", pillar:"mind"},
+  {start:[22,0], end:[23,0], label:"Wind Down — Grooming, Plan Tomorrow", notif:"Wind down. Groom. Lay out tomorrow's plan.", pillar:"body"},
+  {start:[23,0], end:[24,0], label:"Phone Down. Rest. No Scrolling.", notif:"Phone face down. No scrolling. You've earned your rest."},
+  {start:[24,0], end:[29,0], label:"Sleep", notif:"Sleep now. Tomorrow you do it again."}
+];
+
+const SUNDAY_SCHEDULE = [
+  {start:[6,0], end:[6,30], label:"Wake Up & Identity Statement", notif:"Sunday. Rise with gratitude. Say your statement.", },
+  {start:[6,30], end:[7,30], label:"God Time — Extended Prayer & Word", notif:"Extended time with God this morning.", pillar:"god"},
+  {start:[7,30], end:[9,0], label:"Prepare for Church", notif:"Get ready for church.", pillar:"body"},
+  {start:[9,0], end:[12,0], label:"Church / Worship", notif:"Time to worship with others.", pillar:"god"},
+  {start:[12,0], end:[14,0], label:"Rest & Food", notif:"Rest. Eat well. No pressure.", pillar:"body"},
+  {start:[14,0], end:[16,0], label:"People Time — Family & Friends", notif:"Spend real time with people today.", pillar:"relationships"},
+  {start:[16,0], end:[17,30], label:"Weekly Review", notif:"Review your week. Score yourself honestly. Plan the week ahead.", pillar:"mind"},
+  {start:[17,30], end:[19,0], label:"Light Reading / Reflection", notif:"Light reading. No heavy work today.", pillar:"mind"},
+  {start:[19,0], end:[20,0], label:"Evening with God", notif:"Close the week with God.", pillar:"god"},
+  {start:[20,0], end:[22,0], label:"Family / Rest", notif:"Be present with the people around you.", pillar:"relationships"},
+  {start:[22,0], end:[23,0], label:"Wind Down & Plan Tomorrow", notif:"Plan your week. Lay it out properly.", pillar:"body"},
+  {start:[23,0], end:[24,0], label:"Phone Down. Rest.", notif:"Phone down. Rest fully."},
+  {start:[24,0], end:[30,0], label:"Sleep", notif:"Sleep. New week tomorrow."}
+];
+
+const MONTHS = [
+  {
+    key:"m1", num:"Month 1 · Weeks 1–4", title:"Repair",
+    theme:"Stop the bleeding. Build the habit skeleton.",
+    goals:[
+      ["god","Read John 1–10. Pray out loud daily."],
+      ["skills","Piano: C major scale → I IV V chords → first worship song"],
+      ["skills","Graphics: Complete Coursera foundations → Lesson 6"],
+      ["skills","Web Dev: Complete PHP result system. Ship it."],
+      ["mind","EQ: Read Emotional Intelligence by Daniel Goleman"],
+      ["body","Establish grooming routine. Iron clothes the night before."],
+      ["relationships","Identify 3 people. Reach out to one per week."],
+      ["money","Audit income and expenses. Write it down."]
+    ]
+  },
+  {
+    key:"m2", num:"Month 2 · Weeks 5–8", title:"Momentum",
+    theme:"Start producing. Start being seen.",
+    goals:[
+      ["god","Add one fasting day per week. Study the Psalms."],
+      ["skills","Piano: Learn first full song. Record it."],
+      ["skills","Graphics: Design 3 real things (flyer, social post, personal project)"],
+      ["skills","Web Dev: Start one freelance-ready project."],
+      ["mind","EQ: Journal about interactions daily."],
+      ["relationships","One intentional face-to-face per week."],
+      ["relationships","Dating: Grooming, confidence, conversation skills — become datable."],
+      ["money","Identify one skill to charge for. Start the conversation."]
+    ]
+  },
+  {
+    key:"m3", num:"Month 3 · Weeks 9–12", title:"Identity",
+    theme:"The new Fred is becoming undeniable.",
+    goals:[
+      ["god","Find a small group of serious believers."],
+      ["skills","Piano: Add minor chords. Play with feeling."],
+      ["skills","Graphics: Build first mini-portfolio (5 pieces)."],
+      ["skills","Web Dev: Have something live on a free host."],
+      ["mind","EQ: Identify emotional triggers. Write them down."],
+      ["relationships","2–3 quality friendships deepening."],
+      ["relationships","Dating: Be open to meeting someone. Not chasing — present and open."],
+      ["money","First paid work this month."]
+    ]
+  },
+  {
+    key:"m4", num:"Month 4 · Weeks 13–16", title:"Proof",
+    theme:"Show yourself what you've become.",
+    goals:[
+      ["god","Write your testimony of these 4 months."],
+      ["skills","Piano: Record a proper video of one full song."],
+      ["skills","Graphics: Post portfolio publicly (LinkedIn, Behance)."],
+      ["skills","Web Dev: School system polished. One paying skill demonstrated."],
+      ["mind","EQ: You respond, not react. Name emotions in real time."],
+      ["relationships","One deep new quality friendship."],
+      ["money","Freelance offer, paid gig, or clear monetization path."]
+    ]
+  }
+];
+
+const PILLARS = [
+  {key:"god", icon:"🙏", name:"God", meta:"Prayer, Bible, worship, character"},
+  {key:"mind", icon:"🧠", name:"Mind & Emotions", meta:"EQ, journaling, reflection"},
+  {key:"body", icon:"💪", name:"Body & Order", meta:"Cleanliness, grooming, sleep"},
+  {key:"skills", icon:"🎯", name:"Skills", meta:"Piano, graphics, web dev"},
+  {key:"relationships", icon:"🤝", name:"Relationships", meta:"Dating, communication, presence"},
+  {key:"money", icon:"💰", name:"Money", meta:"Earning, freelancing, value"}
+];
+
+const QUOTES = [
+  {text:"Trust in the Lord with all your heart, and do not lean on your own understanding.", attr:"Proverbs 3:5"},
+  {text:"Courage is almost a contradiction in terms. It means a strong desire to live taking the form of a readiness to die.", attr:"C.S. Lewis"},
+  {text:"He who has a why to live can bear with almost any how.", attr:"Viktor Frankl"},
+  {text:"Be still, and know that I am God.", attr:"Psalm 46:10"},
+  {text:"Integrity is doing the right thing, even when no one is watching.", attr:"C.S. Lewis"},
+  {text:"Everything can be taken from a man but one thing: the last of the human freedoms — to choose one's attitude in any given set of circumstances.", attr:"Viktor Frankl"},
+  {text:"I can do all things through him who strengthens me.", attr:"Philippians 4:13"},
+  {text:"We are what we repeatedly do. Excellence, then, is not an act, but a habit.", attr:"Aristotle"},
+  {text:"The Lord is my shepherd; I shall not want.", attr:"Psalm 23:1"},
+  {text:"Hardships often prepare ordinary people for an extraordinary destiny.", attr:"C.S. Lewis"},
+  {text:"Those who hope in the Lord will renew their strength.", attr:"Isaiah 40:31"},
+  {text:"What is to give light must endure burning.", attr:"Viktor Frankl"},
+  {text:"Commit your work to the Lord, and your plans will be established.", attr:"Proverbs 16:3"},
+  {text:"You are never too old to set another goal or to dream a new dream.", attr:"C.S. Lewis"},
+  {text:"For I know the plans I have for you, declares the Lord, plans for welfare and not for evil.", attr:"Jeremiah 29:11"}
+];
+
+/* ===================== STATE / STORAGE ===================== */
+const DAY_MS = 86400000;
+const TOTAL_DAYS = 112;
+
+function load(key, fallback){
+  try{
+    const v = localStorage.getItem(key);
+    return v ? JSON.parse(v) : fallback;
+  }catch(e){ return fallback; }
+}
+function save(key, val){
+  try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){}
+}
+
+let startDate = load('fredos_start_date', null);
+let blockLog = load('fredos_block_log', {});       // {dateStr: {blockIdx: true}}
+let pillarLog = load('fredos_pillar_log', {});      // {dateStr: {pillarKey: true}}
+let pillarStreaks = load('fredos_pillar_streaks', {}); // {pillarKey: {streak, last}}
+let journalEntries = load('fredos_journal', {});    // {dateStr: {jp1,jp2,jp3,jp4,free}}
+let monthGoalLog = load('fredos_month_goals', {});  // {monthKey_idx: true}
+let reminderToggles = load('fredos_reminder_toggles', {}); // {idx: bool}
+let masterRemindersOn = load('fredos_master_reminders', true);
+let scheduledTimeouts = [];
+
+function todayStr(d){
+  d = d || new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
+function getDayNumber(){
+  if(!startDate) return 1;
+  const s = new Date(startDate+'T00:00:00');
+  const n = new Date();
+  const diff = Math.floor((new Date(n.getFullYear(),n.getMonth(),n.getDate()) - new Date(s.getFullYear(),s.getMonth(),s.getDate())) / DAY_MS) + 1;
+  return Math.max(1, Math.min(diff, TOTAL_DAYS));
+}
+
+function isSunday(){ return new Date().getDay() === 0; }
+function getActiveSchedule(){ return isSunday() ? SUNDAY_SCHEDULE : SCHEDULE; }
+
+/* ===================== WELCOME / INIT ===================== */
+const welcomeScreen = document.getElementById('welcomeScreen');
+const startDateInput = document.getElementById('startDateInput');
+
+if(startDate){
+  welcomeScreen.style.display = 'none';
+} else {
+  const t = new Date();
+  startDateInput.value = todayStr(t);
+}
+
+document.getElementById('beginBtn').addEventListener('click', function(){
+  const val = startDateInput.value || todayStr();
+  startDate = val;
+  save('fredos_start_date', startDate);
+  welcomeScreen.style.display = 'none';
+  renderAll();
+});
+
+/* ===================== CLOCK / SLEEP SCREEN ===================== */
+const sleepScreen = document.getElementById('sleepScreen');
+let sleepOverride = false;
+document.getElementById('sleepOverride').addEventListener('click', function(){
+  sleepOverride = true;
+  sleepScreen.classList.remove('show');
+});
+
+function getMinutesNow(){
+  const n = new Date();
+  return n.getHours()*60 + n.getMinutes();
+}
+
+function updateClock(){
+  const n = new Date();
+  const hh = String(n.getHours()).padStart(2,'0');
+  const mm = String(n.getMinutes()).padStart(2,'0');
+  const timeStr = hh+':'+mm;
+  const liveClock = document.getElementById('liveClock');
+  if(liveClock) liveClock.textContent = timeStr;
+  const sleepClock = document.getElementById('sleepClock');
+  if(sleepClock) sleepClock.textContent = timeStr;
+
+  const dateLine = document.getElementById('dateLine');
+  if(dateLine){
+    const opts = {weekday:'long', month:'long', day:'numeric'};
+    dateLine.textContent = n.toLocaleDateString('en-US', opts);
+  }
+
+  // sleep screen logic: 12am - 5am
+  const mins = getMinutesNow();
+  if(mins >= 0 && mins < 300 && !sleepOverride && startDate){
+    sleepScreen.classList.add('show');
+  } else {
+    sleepScreen.classList.remove('show');
+    if(mins >= 300) sleepOverride = false;
+  }
+
+  updateActiveBlock();
+}
+
+/* ===================== TODAY SCREEN RENDER ===================== */
+function findActiveBlock(){
+  const mins = getMinutesNow();
+  const sched = getActiveSchedule();
+  for(let i=0;i<sched.length;i++){
+    const b = sched[i];
+    let s = b.start[0]*60+b.start[1];
+    let e = b.end[0]*60+b.end[1];
+    if(e > 24*60) e = e - 0; // allow overflow blocks (sleep wrap)
+    let m = mins;
+    if(s >= 24*60){ s -= 24*60; }
+    if(e > 24*60){
+      // block wraps past midnight (e.g., sleep 24:00-29:00 = 00:00-05:00 next day)
+      if(m < (e-24*60) || m >= s) return i;
+    } else {
+      if(m >= s && m < e) return i;
+    }
+  }
+  return -1;
+}
+
+function fmtTime(arr){
+  let h = arr[0]; const m = arr[1];
+  if(h>=24) h -= 24;
+  const ampm = h>=12 ? 'PM':'AM';
+  let h12 = h%12; if(h12===0) h12=12;
+  return h12+':'+String(m).padStart(2,'0')+ampm;
+}
+
+function updateActiveBlock(){
+  const sched = getActiveSchedule();
+  const idx = findActiveBlock();
+  const titleEl = document.getElementById('activeBlockTitle');
+  const cdEl = document.getElementById('activeBlockCountdown');
+  if(!titleEl) return;
+
+  if(idx === -1){
+    titleEl.textContent = "Free time";
+    cdEl.textContent = "Nothing scheduled right now.";
+  } else {
+    const b = sched[idx];
+    titleEl.textContent = b.label;
+    const mins = getMinutesNow();
+    let e = b.end[0]*60+b.end[1];
+    if(e > 24*60) e -= 24*60;
+    let remaining = e - mins;
+    if(remaining < 0) remaining += 24*60;
+    const h = Math.floor(remaining/60), m = remaining%60;
+    cdEl.innerHTML = (h>0? h+'h ':'') + m + 'm left in this block <b>· ends '+fmtTime(b.end)+'</b>';
+  }
+
+  // streak
+  const dn = getDayNumber();
+  document.getElementById('streakNum').textContent = 'Day '+dn;
+
+  renderTimeline(idx);
+}
+
+function renderTimeline(activeIdx){
+  const sched = getActiveSchedule();
+  const tl = document.getElementById('timeline');
+  const today = todayStr();
+  const log = blockLog[today] || {};
+  tl.innerHTML = '';
+
+  sched.forEach(function(b, i){
+    const div = document.createElement('div');
+    let cls = 'tl-item';
+    if(i === activeIdx) cls += ' active';
+    else if(i < activeIdx || (activeIdx===-1 && i < sched.length)) {
+      // mark past if block end already happened today
+      let e = b.end[0]*60+b.end[1]; if(e>24*60) e-=24*60;
+      if(getMinutesNow() > e && activeIdx !== i) cls += ' past';
+    }
+    div.className = cls;
+    const done = !!log[i];
+    div.innerHTML =
+      '<div class="tl-time">'+fmtTime(b.start)+'</div>'+
+      '<div class="tl-check '+(done?'done':'')+'" data-idx="'+i+'"></div>'+
+      '<div class="tl-content"><div class="tl-label">'+b.label+'</div></div>';
+    tl.appendChild(div);
+  });
+
+  tl.querySelectorAll('.tl-check').forEach(function(el){
+    el.addEventListener('click', function(){
+      const i = el.getAttribute('data-idx');
+      if(!blockLog[today]) blockLog[today] = {};
+      blockLog[today][i] = !blockLog[today][i];
+      save('fredos_block_log', blockLog);
+      el.classList.toggle('done');
+    });
+  });
+}
+
+/* ===================== PILLARS SCREEN ===================== */
+function computeStreak(pillarKey){
+  let streak = 0;
+  let d = new Date();
+  while(true){
+    const ds = todayStr(d);
+    if(pillarLog[ds] && pillarLog[ds][pillarKey]){
+      streak++;
+      d.setDate(d.getDate()-1);
+    } else if(ds === todayStr()){
+      // today not logged yet, check yesterday onward
+      d.setDate(d.getDate()-1);
+      continue;
+    } else {
+      break;
+    }
+  }
+  return streak;
+}
+
+function renderPillars(){
+  const grid = document.getElementById('pillarGrid');
+  if(!grid) return;
+  const today = todayStr();
+  const log = pillarLog[today] || {};
+  grid.innerHTML = '';
+
+  PILLARS.forEach(function(p){
+    const isLogged = !!log[p.key];
+    const streak = computeStreak(p.key);
+    const progress = Math.min(100, Math.round((getDayNumber()/TOTAL_DAYS)*100));
+
+    const card = document.createElement('div');
+    card.className = 'pillar-card' + (isLogged ? ' logged' : '');
+    card.innerHTML =
+      '<div class="pillar-top">'+
+        '<div class="pillar-name"><span class="pillar-icon">'+p.icon+'</span>'+p.name+'</div>'+
+        '<div class="pillar-streak"><b>'+streak+'</b> day streak</div>'+
+      '</div>'+
+      '<div class="pillar-meta">'+p.meta+'</div>'+
+      '<div class="pillar-bar-track"><div class="pillar-bar-fill" style="width:'+progress+'%"></div></div>'+
+      '<div class="pillar-actions">'+
+        '<button class="btn-log '+(isLogged?'done':'')+'" data-key="'+p.key+'">'+(isLogged?'✓ Logged Today':'Log Today')+'</button>'+
+      '</div>';
+    grid.appendChild(card);
+  });
+
+  grid.querySelectorAll('.btn-log').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      const key = btn.getAttribute('data-key');
+      if(!pillarLog[today]) pillarLog[today] = {};
+      pillarLog[today][key] = !pillarLog[today][key];
+      save('fredos_pillar_log', pillarLog);
+      renderPillars();
+    });
+  });
+}
+
+/* ===================== PLAN SCREEN ===================== */
+function getCurrentMonthIndex(){
+  const dn = getDayNumber();
+  return Math.min(3, Math.floor((dn-1)/28));
+}
+function getWeekInMonth(monthIdx){
+  const dn = getDayNumber();
+  const weekOverall = Math.floor((dn-1)/7)+1;
+  const weekInMonth = ((weekOverall-1) % 4) + 1;
+  return {weekOverall, weekInMonth};
+}
+
+let openMonths = {};
+function renderPlan(){
+  const wrap = document.getElementById('monthCards');
+  if(!wrap) return;
+  wrap.innerHTML = '';
+  const curIdx = getCurrentMonthIndex();
+
+  MONTHS.forEach(function(month, mi){
+    const status = mi < curIdx ? 'completed' : (mi === curIdx ? 'current' : 'upcoming');
+    const goalKeyPrefix = month.key+'_';
+    let doneCount = 0;
+    month.goals.forEach(function(g, gi){
+      if(monthGoalLog[goalKeyPrefix+gi]) doneCount++;
+    });
+    const progress = Math.round((doneCount/month.goals.length)*100);
+    const isOpen = !!openMonths[month.key] || status==='current';
+
+    const card = document.createElement('div');
+    card.className = 'month-card' + (status==='current' ? ' current' : '');
+
+    let weekInfo = '';
+    if(status === 'current'){
+      const w = getWeekInMonth(mi);
+      weekInfo = '<div class="week-indicator">You are in Week '+w.weekInMonth+' of this month · Week '+w.weekOverall+' overall</div>';
+    }
+
+    card.innerHTML =
+      '<div class="month-head" data-key="'+month.key+'">'+
+        '<div class="month-head-left">'+
+          '<div class="m-num">'+month.num+'</div>'+
+          '<div class="m-title">'+month.title+'</div>'+
+          '<div class="m-theme">'+month.theme+'</div>'+
+          weekInfo+
+        '</div>'+
+        '<div class="m-badge '+status+'">'+status.toUpperCase()+'</div>'+
+      '</div>'+
+      '<div class="month-progress-track"><div class="month-progress-fill" style="width:'+progress+'%"></div></div>'+
+      '<div class="month-body '+(isOpen?'open':'')+'" id="body-'+month.key+'">'+
+        '<div class="month-goals">'+
+          month.goals.map(function(g,gi){
+            const done = !!monthGoalLog[goalKeyPrefix+gi];
+            const pillarIcon = (PILLARS.find(function(p){return p.key===g[0];})||{}).icon || '•';
+            return '<div class="goal-row"><div class="goal-check '+(done?'done':'')+'" data-goalkey="'+goalKeyPrefix+gi+'"></div>'+
+              '<div class="goal-text">'+pillarIcon+' '+g[1]+'</div></div>';
+          }).join('')+
+        '</div>'+
+      '</div>';
+    wrap.appendChild(card);
+  });
+
+  wrap.querySelectorAll('.month-head').forEach(function(h){
+    h.addEventListener('click', function(){
+      const key = h.getAttribute('data-key');
+      openMonths[key] = !openMonths[key];
+      const body = document.getElementById('body-'+key);
+      body.classList.toggle('open');
+    });
+  });
+  wrap.querySelectorAll('.goal-check').forEach(function(c){
+    c.addEventListener('click', function(e){
+      e.stopPropagation();
+      const key = c.getAttribute('data-goalkey');
+      monthGoalLog[key] = !monthGoalLog[key];
+      save('fredos_month_goals', monthGoalLog);
+      c.classList.toggle('done');
+      renderPlan();
+    });
+  });
+}
+
+/* ===================== REMINDERS SCREEN ===================== */
+function renderReminders(){
+  const list = document.getElementById('reminderList');
+  if(!list) return;
+  const sched = getActiveSchedule();
+  list.innerHTML = '';
+
+  sched.forEach(function(b, i){
+    const on = reminderToggles[i] !== false;
+    const row = document.createElement('div');
+    row.className = 'reminder-row';
+    row.innerHTML =
+      '<div class="reminder-time">'+fmtTime(b.start)+'</div>'+
+      '<div class="reminder-text"><div class="rb-name">'+b.label+'</div><div class="rb-msg">'+b.notif+'</div></div>'+
+      '<div class="toggle '+(on?'on':'')+'" data-idx="'+i+'"></div>';
+    list.appendChild(row);
+  });
+
+  list.querySelectorAll('.toggle').forEach(function(t){
+    t.addEventListener('click', function(){
+      const i = t.getAttribute('data-idx');
+      reminderToggles[i] = !(reminderToggles[i] !== false);
+      save('fredos_reminder_toggles', reminderToggles);
+      t.classList.toggle('on');
+      scheduleNotifications();
+    });
+  });
+
+  const masterToggle = document.getElementById('masterToggle');
+  masterToggle.classList.toggle('on', masterRemindersOn);
+
+  checkNotifPermission();
+}
+
+document.getElementById('masterToggle').addEventListener('click', function(){
+  masterRemindersOn = !masterRemindersOn;
+  save('fredos_master_reminders', masterRemindersOn);
+  this.classList.toggle('on');
+  scheduleNotifications();
+});
+
+function checkNotifPermission(){
+  const banner = document.getElementById('notifBanner');
+  if(!('Notification' in window)){
+    banner.style.display = 'block';
+    banner.querySelector('button').style.display='none';
+    return;
+  }
+  if(Notification.permission !== 'granted'){
+    banner.style.display = 'block';
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
+document.getElementById('enableNotifBtn').addEventListener('click', function(){
+  if('Notification' in window){
+    Notification.requestPermission().then(function(){
+      checkNotifPermission();
+      scheduleNotifications();
+    });
+  }
+});
+
+/* ===================== NOTIFICATION SCHEDULING ===================== */
+function scheduleNotifications(){
+  scheduledTimeouts.forEach(clearTimeout);
+  scheduledTimeouts = [];
+  if(!masterRemindersOn) return;
+  if(!('Notification' in window) || Notification.permission !== 'granted') return;
+
+  const sched = getActiveSchedule();
+  const now = new Date();
+  sched.forEach(function(b, i){
+    if(reminderToggles[i] === false) return;
+    let h = b.start[0]; if(h>=24) h-=24;
+    const target = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, b.start[1], 0);
+    let delay = target - now;
+    if(delay < 0) return; // only schedule remaining ones for today
+    if(delay > 2147000000) return; // max setTimeout safety
+    const t = setTimeout(function(){
+      try{
+        new Notification('The Fred OS', {body: b.notif, icon:''});
+      }catch(e){}
+    }, delay);
+    scheduledTimeouts.push(t);
+  });
+}
+
+/* ===================== JOURNAL SCREEN ===================== */
+const jp1 = document.getElementById('jp1'), jp2 = document.getElementById('jp2'),
+      jp3 = document.getElementById('jp3'), jp4 = document.getElementById('jp4'),
+      jpFree = document.getElementById('jpFree');
+let journalSaveTimer = null;
+
+function loadJournalToday(){
+  const today = todayStr();
+  const entry = journalEntries[today] || {};
+  jp1.value = entry.jp1 || '';
+  jp2.value = entry.jp2 || '';
+  jp3.value = entry.jp3 || '';
+  jp4.value = entry.jp4 || '';
+  jpFree.value = entry.free || '';
+
+  const opts = {weekday:'long', month:'long', day:'numeric'};
+  document.getElementById('journalDateLabel').textContent = new Date().toLocaleDateString('en-US', opts);
+
+  const hour = new Date().getHours();
+  document.getElementById('jp4wrap').style.display = hour >= 21 ? 'block' : 'none';
+}
+
+function saveJournal(){
+  const today = todayStr();
+  journalEntries[today] = {
+    jp1: jp1.value, jp2: jp2.value, jp3: jp3.value, jp4: jp4.value, free: jpFree.value
+  };
+  save('fredos_journal', journalEntries);
+  const ind = document.getElementById('saveIndicator');
+  ind.classList.add('show');
+  clearTimeout(journalSaveTimer);
+  journalSaveTimer = setTimeout(function(){ ind.classList.remove('show'); }, 1500);
+  renderPastEntries();
+}
+
+[jp1,jp2,jp3,jp4,jpFree].forEach(function(el){
+  el.addEventListener('input', function(){
+    clearTimeout(el._t);
+    el._t = setTimeout(saveJournal, 500);
+  });
+});
+
+let openEntries = {};
+function renderPastEntries(){
+  const wrap = document.getElementById('pastEntries');
+  const today = todayStr();
+  const dates = Object.keys(journalEntries).filter(function(d){ return d !== today && journalEntries[d] && (journalEntries[d].jp1||journalEntries[d].jp2||journalEntries[d].jp3||journalEntries[d].free); }).sort().reverse();
+
+  if(dates.length === 0){
+    wrap.innerHTML = '<div class="empty-note">No past entries yet. Today\'s entry will appear here tomorrow.</div>';
+    return;
+  }
+
+  wrap.innerHTML = '';
+  dates.forEach(function(d){
+    const e = journalEntries[d];
+    const dObj = new Date(d+'T00:00:00');
+    const label = dObj.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'});
+    const isOpen = !!openEntries[d];
+    const row = document.createElement('div');
+    row.className = 'entry-row';
+    row.innerHTML =
+      '<div class="entry-head" data-date="'+d+'"><div class="entry-date"><span class="entry-dot"></span>'+label+'</div><div style="color:var(--grey);font-size:11px;">'+(isOpen?'▾':'▸')+'</div></div>'+
+      '<div class="entry-body '+(isOpen?'open':'')+'" id="ebody-'+d+'">'+
+        '<div class="entry-body-inner">'+
+          (e.jp1?'<b>Feel:</b> '+escapeHtml(e.jp1)+'<br><br>':'')+
+          (e.jp2?'<b>Wanted:</b> '+escapeHtml(e.jp2)+'<br><br>':'')+
+          (e.jp3?'<b>Afraid of:</b> '+escapeHtml(e.jp3)+'<br><br>':'')+
+          (e.jp4?'<b>Made others feel:</b> '+escapeHtml(e.jp4)+'<br><br>':'')+
+          (e.free?'<b>Free write:</b> '+escapeHtml(e.free):'')+
+        '</div>'+
+      '</div>';
+    wrap.appendChild(row);
+  });
+
+  wrap.querySelectorAll('.entry-head').forEach(function(h){
+    h.addEventListener('click', function(){
+      const d = h.getAttribute('data-date');
+      openEntries[d] = !openEntries[d];
+      renderPastEntries();
+    });
+  });
+}
+
+function escapeHtml(s){
+  const div = document.createElement('div');
+  div.textContent = s;
+  return div.innerHTML;
+}
+
+/* ===================== QUOTE OF THE DAY ===================== */
+function renderQuote(){
+  const dn = getDayNumber();
+  const q = QUOTES[dn % QUOTES.length];
+  document.getElementById('quoteBar').innerHTML = '"'+q.text+'" <span class="attr">— '+q.attr+'</span>';
+}
+
+/* ===================== NAVIGATION ===================== */
+document.querySelectorAll('.nav-btn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    document.querySelectorAll('.nav-btn').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    const screenName = btn.getAttribute('data-screen');
+    document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+    document.getElementById('screen-'+screenName).classList.add('active');
+    if(screenName === 'journal') loadJournalToday();
+    if(screenName === 'pillars') renderPillars();
+    if(screenName === 'plan') renderPlan();
+    if(screenName === 'reminders') renderReminders();
+  });
+});
+
+/* ===================== INIT ===================== */
+function renderAll(){
+  renderQuote();
+  updateClock();
+  renderPillars();
+  renderPlan();
+  renderReminders();
+  loadJournalToday();
+  renderPastEntries();
+  scheduleNotifications();
+}
+
+if('Notification' in window && Notification.permission === 'default' && startDate){
+  // request quietly after a short delay on first real use
+}
+
+setInterval(updateClock, 1000);
+renderAll();
+
+// re-schedule notifications fresh each new day
+setInterval(function(){
+  const h = new Date().getHours(), m = new Date().getMinutes(), s = new Date().getSeconds();
+  if(h===0 && m===0 && s<5){
+    scheduleNotifications();
+    renderQuote();
+  }
+}, 4000);
+
+})();
+</script>
+</body>
+</html>
